@@ -8,6 +8,8 @@ const path=require('path');
 const app=express();
 require('dotenv').config();
 
+let file_path=path.join(__dirname,'../','json-files',"myfile.json");
+
 app.use(cors());
 
 const PORT=process.env.PORT;
@@ -18,7 +20,7 @@ app.get('/',(req,res)=>{
 
 app.get('/readCsv', async (req,res)=>
 {
-    let file_path=path.join(__dirname,'../','json-files',"myfile.json");
+ 
     let filterCriteria=[ "policyID","county" ];
 
        let res_back= await readCsvFile(filterCriteria);
@@ -44,6 +46,31 @@ app.get('/readCsv', async (req,res)=>
                 })
             });
 
+});
+
+app.get('/readExportedData',(req,res)=>
+{
+    fs.readFile(file_path,'utf8',(err,data)=>
+    {
+        if(err)
+        {
+            res.status(400).send({
+                status:"failed",
+                msg:err.message
+            })
+
+            return;
+        }
+
+        data=JSON.parse(data);
+
+        res.json({
+            status:"success",
+            Data:{
+             data
+            }
+        })
+    })
 })
 
 
