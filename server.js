@@ -3,10 +3,12 @@ const cors=require('cors');
 const {readCsvFile} = require('./controller/controller');
 const fs=require('fs');
 const path=require('path');
+const bodyParser=require('body-parser');
 
 
 
 const app=express();
+app.use(bodyParser.json());
 require('dotenv').config();
 
 let Json_file_path=path.join(__dirname,'json-files',"myfile.json");
@@ -20,13 +22,11 @@ app.get('/',(req,res)=>{
 });
 
 
-app.get('/exportCsv/:key/:value', async (req,res)=>
+app.post('/exportCsv', async (req,res)=>
 {
-    
-    let Key=req.params.key;
-    let value=req.params.value;
+    console.log("body",req.body);
 
-       let res_back= await readCsvFile(Csv_file_path,Key,value);
+       let res_back= await readCsvFile(Csv_file_path,req.body);
 
        if(res_back.length)
        {

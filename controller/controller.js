@@ -4,7 +4,7 @@ const path=require('path');
 
 
 
-const readCsvFile = (filePath,key,value)=>
+const readCsvFile = (filePath,filtercriteria)=>
 {
      const filteredResults=[];  
 
@@ -17,7 +17,7 @@ const readCsvFile = (filePath,key,value)=>
           
           stream.on('data',(data)=>{
 
-               let filterObject=copyObjectWithSelectedKeys(data,key,value);
+               let filterObject=copyObjectWithSelectedKeys(data,filtercriteria);
 
                let temp=filterObject;
 
@@ -41,10 +41,12 @@ const readCsvFile = (filePath,key,value)=>
 
 }
   
-const copyObjectWithSelectedKeys = (data,key,value)=>
+const copyObjectWithSelectedKeys = (data,filtercriteria)=>
 {
-     // console.log(data);
-     return data[key] == value.toUpperCase() ? data : {};
+     //  console.log(Object.keys(data)).reducer();
+        let keys=Object.keys(filtercriteria);
+
+     return data[keys[0]].toUpperCase() == filtercriteria[keys[0]].toUpperCase() ? data : {};
 }
 
 
