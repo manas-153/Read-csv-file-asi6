@@ -6,17 +6,22 @@ const path=require('path');
 
 const readCsvFile = (filePath,filterCriteria)=>
 {
-
-         const filteredResults=[];  
+     const filteredResults=[];  
 
      return new Promise((resolve,reject)=>
      {
           try
           {
           let stream=fs.createReadStream(filePath).pipe(csv());
+          
           stream.on('data',(data)=>{
+
                let filterObject=copyObjectWithSelectedKeys(data,filterCriteria);
-               filteredResults.push(filterObject);
+
+               if(Object.keys(filterObject).length != 0)
+               {
+                    filteredResults.push(filterObject);
+               }
           });
           
           stream.on('end',()=>resolve(filteredResults));

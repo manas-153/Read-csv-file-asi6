@@ -3,7 +3,7 @@ const cors=require('cors');
 const {readCsvFile} = require('../controller/controller');
 const fs=require('fs');
 const path=require('path');
-const csvParser = require('csv-parser');
+
 
 
 const app=express();
@@ -30,28 +30,12 @@ app.get('/readCsv',async (req,res)=>
 
       if(res_back.length)
       {
-
-        fs.writeFile(Json_file_path,JSON.stringify(res_back,null,2),(err)=>
-        {
-            if(err)
-            {
-                res.send({
-                    status:"failed",
-                    msg:err.message
-                });
-
-                return;
-
+        res.send({
+            status:"success",
+            Date:{
+                res_back,
             }
-
-            res.send({
-                status:"success",
-                Date:{
-                    res_back,
-                }
-            })
- 
-        })
+            });
      
         return;
       }
@@ -80,7 +64,6 @@ app.get('/exportCsv', async (req,res)=>
     let filterCriteria=[ "policyID","county"];
 
        let res_back= await readCsvFile(Csv_file_path,filterCriteria);
-    //    console.log("Error",res_back);
 
             fs.writeFile(Json_file_path,JSON.stringify(res_back,null,2),(err)=>
             {
@@ -140,6 +123,8 @@ app.get('/readExportedData',(req,res)=>
         })
     })
 })
+
+
 
 app.listen(5000,()=>
 {
