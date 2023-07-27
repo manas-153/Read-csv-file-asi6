@@ -4,7 +4,7 @@ const path=require('path');
 
 
 
-const readCsvFile = (filePath,filterCriteria)=>
+const readCsvFile = (filePath,key,value)=>
 {
      const filteredResults=[];  
 
@@ -12,13 +12,16 @@ const readCsvFile = (filePath,filterCriteria)=>
      {
           try
           {
+
           let stream=fs.createReadStream(filePath).pipe(csv());
           
           stream.on('data',(data)=>{
 
-               let filterObject=copyObjectWithSelectedKeys(data,filterCriteria);
+               let filterObject=copyObjectWithSelectedKeys(data,key,value);
 
-               if(Object.keys(filterObject).length != 0)
+               let temp=filterObject;
+
+               if(Object.keys(temp).length!=0)
                {
                     filteredResults.push(filterObject);
                }
@@ -38,20 +41,11 @@ const readCsvFile = (filePath,filterCriteria)=>
 
 }
   
-
-const copyObjectWithSelectedKeys = (data,filterCriteria)=>
+const copyObjectWithSelectedKeys = (data,key,value)=>
 {
-     const copyObject={};
-
-     filterCriteria.forEach(key => {
-            if(data.hasOwnProperty(key))
-            {
-               copyObject[key]=data[key];
-            }
-     });
-
-     return copyObject;
-
+     // console.log(data);
+     return data[key] == value.toUpperCase() ? data : {};
 }
+
 
 module.exports={readCsvFile};
