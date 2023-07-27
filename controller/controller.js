@@ -43,10 +43,9 @@ const readCsvFile = (filePath,filtercriteria)=>
   
 const copyObjectWithSelectedKeys = (data,filtercriteria)=>
 {
-     //  console.log(Object.keys(data)).reducer();
         let keys=Object.keys(filtercriteria);
 
-     return data[keys[0]].toUpperCase() == filtercriteria[keys[0]].toUpperCase() ? data : {};
+     return data[keys].toUpperCase() == filtercriteria[keys].toUpperCase() ? data : {};
 }
 
 
