@@ -2,14 +2,17 @@ const fs = require('fs');
 const csv = require('csv-parser');
 const path=require('path');
 
-const filePath=path.join(__dirname, "../", 'FL_insurance_sample.csv','FL_insurance_sample.csv');
 
-const readCsvFile =  (filterCriteria)=>
+
+const readCsvFile = (filePath,filterCriteria)=>
 {
-     const filteredResults=[];  
+
+         const filteredResults=[];  
 
      return new Promise((resolve,reject)=>
      {
+          try
+          {
           let stream=fs.createReadStream(filePath).pipe(csv());
           stream.on('data',(data)=>{
                let filterObject=copyObjectWithSelectedKeys(data,filterCriteria);
@@ -19,9 +22,17 @@ const readCsvFile =  (filterCriteria)=>
           stream.on('end',()=>resolve(filteredResults));
           stream.on('error',(err)=>reject(err));
 
+     }
+     catch(err)
+     {
+          console.log("hey");
+          reject(err.message);
+     }
+
      });   
-  
+
 }
+  
 
 const copyObjectWithSelectedKeys = (data,filterCriteria)=>
 {

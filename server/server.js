@@ -1,31 +1,88 @@
 const express = require('express');
 const cors=require('cors');
-const { readCsvFile} = require('../controller/controller');
+const {readCsvFile} = require('../controller/controller');
 const fs=require('fs');
 const path=require('path');
+const csvParser = require('csv-parser');
 
 
 const app=express();
 require('dotenv').config();
 
-let file_path=path.join(__dirname,'../','json-files',"myfile.json");
+let Json_file_path=path.join(__dirname,'../','json-files',"myfile.json");
+let Csv_file_path=path.join(__dirname, "../", 'FL_insurance_sample.csv','data.csv');
 
 app.use(cors());
-
 const PORT=process.env.PORT;
 
 app.get('/',(req,res)=>{
     res.send("Hello from node js");
+});
+
+
+app.get('/readCsv',async (req,res)=>
+{
+    try
+    {
+      let filterCriteria=["policyID","county","statecode","eq_site_limit","fl_site_limit","hu_site_limit","fr_site_limit","tiv_2011","point_granularity","construction","point_longitude","point_latitude","fr_site_deductible","fl_site_deductible","hu_site_deductible","eq_site_deductible","tiv_2012","tiv_2011"];
+
+      let res_back=await readCsvFile(Csv_file_path,filterCriteria);
+
+      if(res_back.length)
+      {
+
+        fs.writeFile(Json_file_path,JSON.stringify(res_back,null,2),(err)=>
+        {
+            if(err)
+            {
+                res.send({
+                    status:"failed",
+                    msg:err.message
+                });
+
+                return;
+
+            }
+
+            res.send({
+                status:"success",
+                Date:{
+                    res_back,
+                }
+            })
+ 
+        })
+     
+        return;
+      }
+
+      res.status(400).send({
+        status:"failed",
+        msg:"REquested data not avalaible"
+      })
+
+    }
+    catch(err)
+    {
+        res.status(400).send({
+            "status":"failed",
+            msg:err.message
+        })
+    }
+
 })
 
-app.get('/readCsv', async (req,res)=>
+app.get('/exportCsv', async (req,res)=>
 {
+    try
+    {
  
-    let filterCriteria=[ "policyID","county" ];
+    let filterCriteria=[ "policyID","county"];
 
-       let res_back= await readCsvFile(filterCriteria);
+       let res_back= await readCsvFile(Csv_file_path,filterCriteria);
+    //    console.log("Error",res_back);
 
-            fs.writeFile(file_path,JSON.stringify(res_back,null,2),(err)=>
+            fs.writeFile(Json_file_path,JSON.stringify(res_back,null,2),(err)=>
             {
                 if(err)
                 {
@@ -46,11 +103,22 @@ app.get('/readCsv', async (req,res)=>
                 })
             });
 
+  }
+
+  catch(err)
+     {
+          res.status(400).send({
+            status:"failed",
+            msg:err.message
+          })
+  
+      }
+
 });
 
 app.get('/readExportedData',(req,res)=>
 {
-    fs.readFile(file_path,'utf8',(err,data)=>
+    fs.readFile(Json_file_path,'utf8',(err,data)=>
     {
         if(err)
         {
@@ -72,8 +140,6 @@ app.get('/readExportedData',(req,res)=>
         })
     })
 })
-
-
 
 app.listen(5000,()=>
 {
