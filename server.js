@@ -24,8 +24,8 @@ app.get('/',(req,res)=>{
 
 app.post('/exportCsv', async (req,res)=>
 {
-    console.log("body",req.body);
-
+    if(Object.keys(req.body).length!=0)
+    {
        let res_back= await readCsvFile(Csv_file_path,req.body);
 
        if(res_back.length)
@@ -60,6 +60,17 @@ app.post('/exportCsv', async (req,res)=>
         status:"failed",
         msg:"No such data Find to export",
        })
+
+       return;
+    }
+    
+
+    res.status(400).send({
+        status:"failed",
+        msg:"Body parameters must be provided to request data",
+    })
+
+
 
 
 });
